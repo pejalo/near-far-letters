@@ -1,40 +1,34 @@
+import { CHART_DIMENSIONS_MAP, SYMBOLS_MAP } from "./constants.js"
 import getRandomStrings from "./get-random-strings.js"
 import generate from "./generate.js"
 
-// paper dimensions are in PostScript points
-// https://pdfkit.org/docs/paper_sizes.html
-const A4_DIMENSIONS = [595.28, 841.89] // [210mm, 297mm]
-const CARD_WIDTH = A4_DIMENSIONS[0]/2
-
+const CHART_DIMENSIONS = CHART_DIMENSIONS_MAP.A4_PORTRAIT
+const CARD_WIDTH = CHART_DIMENSIONS[0]/2
 const ROWS_COUNT = 9
 const COLS_COUNT = 12
-
-const THAI_CONSTONANTS = [
-  "ก", "ข", "ฃ", "ค", "ฅ", "ฆ", "ง", "จ", "ฉ", "ช", 
-  "ซ", "ฌ", "ญ", "ฎ", "ฏ", "ฐ", "ฑ", "ฒ", "ณ", "ด", 
-  "ต", "ถ", "ท", "ธ", "น", "บ", "ป", "ผ", "ฝ", "พ", 
-  "ฟ", "ภ", "ม", "ย", "ร", "ล", "ว", "ศ", "ษ", "ส", 
-  "ห", "ฬ", "อ", "ฮ"
-]
+const SYMBOLS = SYMBOLS_MAP.ENGLISH_LETTERS
+const FILE_NAME_SUFFIX = "_1"
 
 ;(() => {
+  const chartFileName = `far${FILE_NAME_SUFFIX}`
   generate({
-    FILE_NAME: 'far.pdf',
-    WIDTH: A4_DIMENSIONS[0],
-    HEIGHT: A4_DIMENSIONS[1],
+    FILE_NAME: chartFileName,
+    WIDTH: CHART_DIMENSIONS[0],
+    HEIGHT: CHART_DIMENSIONS[1],
     ROWS_COUNT,
     COLS_COUNT,
     FONT_SIZE: 24,
-    STRINGS: getRandomStrings(THAI_CONSTONANTS, ROWS_COUNT*COLS_COUNT),
+    STRINGS: getRandomStrings(SYMBOLS, ROWS_COUNT*COLS_COUNT),
   })
+  const cardFileName = `near${FILE_NAME_SUFFIX}`
   generate({
-    FILE_NAME: 'near.pdf',
+    FILE_NAME: cardFileName,
     WIDTH: CARD_WIDTH,
     HEIGHT: CARD_WIDTH,
     ROWS_COUNT,
     COLS_COUNT,
     FONT_SIZE: 12,
-    STRINGS: getRandomStrings(THAI_CONSTONANTS, ROWS_COUNT*COLS_COUNT),
+    STRINGS: getRandomStrings(SYMBOLS, ROWS_COUNT*COLS_COUNT),
   })
-  console.debug('generated far.pdf and near.pdf')
+  console.debug(`generated ${cardFileName} and ${cardFileName}`)
 })()

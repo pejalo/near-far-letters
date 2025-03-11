@@ -12,6 +12,7 @@ export default function (params) {
     COLS_COUNT,
     FONT_SIZE,
     STRINGS,
+    SHOULD_INCLUDE_FOOTER = true,
   } = params
   const ITEM_WIDTH = (WIDTH - 2*MARGIN) / COLS_COUNT
   const ITEM_HEIGHT = (HEIGHT - 2*MARGIN) / ROWS_COUNT
@@ -34,5 +35,13 @@ export default function (params) {
     }
   }
 
-  writeFileSync(FILE_NAME, canvas.toBuffer())
+  if (SHOULD_INCLUDE_FOOTER) {
+    const footerFontSize = Math.round(FONT_SIZE/2)
+    const footerCenterX = WIDTH/2
+    const footerCenterY = HEIGHT - Math.round(footerFontSize*1.5)
+    ctx.font = `${footerFontSize}pt sans-serif`
+    ctx.fillText(FILE_NAME, footerCenterX, footerCenterY)
+  }
+
+  writeFileSync(`${FILE_NAME}.pdf`, canvas.toBuffer())
 }
