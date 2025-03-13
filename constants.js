@@ -1,7 +1,8 @@
 // paper dimensions are in PostScript points
 // https://pdfkit.org/docs/paper_sizes.html
-export const CHART_DIMENSIONS_MAP = {
-  A4_PORTRAIT: [595.28, 841.89], // [210mm, 297mm]
+export const PAPER_SIZES_MAP = {
+  A4_PORTRAIT: [595.28, 841.89], // mm: [210, 297]
+  LETTER_PORTRAIT: [612, 792], // mm: [215.9, 279.4]
 }
 
 export const SYMBOLS_MAP = {

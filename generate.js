@@ -1,47 +1,44 @@
+import { PAPER_SIZES_MAP, SYMBOLS_MAP } from "./constants.js"
+import getRandomStrings from "./get-random-strings.js"
+import fillCanvas from "./fill-canvas.js"
 import { createCanvas } from "canvas"
 import { writeFileSync } from "fs"
 
-const MARGIN = 20 // PS points
+const CHART_DIMENSIONS = PAPER_SIZES_MAP.A4_PORTRAIT
+const CARD_WIDTH = CHART_DIMENSIONS[0]/2
+const ROWS_COUNT = 9
+const COLS_COUNT = 12
+const SYMBOLS = SYMBOLS_MAP.ENGLISH_LETTERS
+const FILE_NAME_SUFFIX = "_1"
 
-export default function (params) {
-  const {
-    FILE_NAME,
-    WIDTH,
-    HEIGHT,
+;(() => {
+  const chartName = `far${FILE_NAME_SUFFIX}`
+  generatePdf({
+    WIDTH: CHART_DIMENSIONS[0],
+    HEIGHT: CHART_DIMENSIONS[1],
     ROWS_COUNT,
     COLS_COUNT,
-    FONT_SIZE,
-    STRINGS,
-    SHOULD_INCLUDE_FOOTER = true,
-  } = params
-  const ITEM_WIDTH = (WIDTH - 2*MARGIN) / COLS_COUNT
-  const ITEM_HEIGHT = (HEIGHT - 2*MARGIN) / ROWS_COUNT
+    FONT_SIZE: 24,
+    STRINGS: getRandomStrings(SYMBOLS, ROWS_COUNT*COLS_COUNT),
+    FOOTER: chartName,
+  }, chartName)
+  const cardName = `near${FILE_NAME_SUFFIX}`
+  generatePdf({
+    WIDTH: CARD_WIDTH,
+    HEIGHT: CARD_WIDTH,
+    ROWS_COUNT,
+    COLS_COUNT,
+    FONT_SIZE: 12,
+    STRINGS: getRandomStrings(SYMBOLS, ROWS_COUNT*COLS_COUNT),
+    FOOTER: cardName,
+  }, cardName)
+})()
 
-  const canvas = createCanvas(WIDTH, HEIGHT, 'pdf')
-  const ctx = canvas.getContext('2d')
-  ctx.imageSmoothingEnabled = false
-  ctx.fillStyle = 'black'
-  ctx.font = `bold ${FONT_SIZE}pt sans-serif`
-  // so we can set text positions based on the middle of the text
-  ctx.textBaseline = 'middle'
-  ctx.textAlign = 'center'
-
-  for (let rowIndex = 0; rowIndex < ROWS_COUNT; rowIndex++) {
-    for (let colIndex = 0; colIndex < COLS_COUNT; colIndex++) {
-      const string = STRINGS[rowIndex*COLS_COUNT + colIndex]
-      const centerX = MARGIN + (ITEM_WIDTH*colIndex) + ITEM_WIDTH/2
-      const centerY = MARGIN + (ITEM_HEIGHT*rowIndex) + ITEM_HEIGHT/2
-      ctx.fillText(string, centerX, centerY)
-    }
-  }
-
-  if (SHOULD_INCLUDE_FOOTER) {
-    const footerFontSize = Math.round(FONT_SIZE/2)
-    const footerCenterX = WIDTH/2
-    const footerCenterY = HEIGHT - Math.round(footerFontSize*1.5)
-    ctx.font = `${footerFontSize}pt sans-serif`
-    ctx.fillText(FILE_NAME, footerCenterX, footerCenterY)
-  }
-
-  writeFileSync(`${FILE_NAME}.pdf`, canvas.toBuffer())
+function generatePdf(params, name) {
+  const canvas = createCanvas(params.WIDTH, params.HEIGHT, 'pdf')
+  fillCanvas(canvas, params)
+  const fileName = `${name}.pdf`
+  writeFileSync(fileName, canvas.toBuffer())
+  console.debug(`generated ${fileName}`)
+  return fileName
 }
